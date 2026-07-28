@@ -415,18 +415,18 @@ namespace Server.Items
 
 				if ( scroll.Page == 1 )
 				{
-					AddHtml( 71, 75, 384, 140, @"<BODY><BASEFONT Color=#111111><BIG>" + ShinobiSpeech( mScroll ) + "</BIG></BASEFONT></BODY>", (bool)false, (bool)true);
+					AddHtml( 71, 75, 384, 140, @"<BODY><BASEFONT Color=#111111><BIG>" + ShinobiSpeech( mScroll ) + "</BIG></BASEFONT></BODY>", (bool)false, (bool)true, false);
 				}
 				else if ( scroll.Page == 2 )
 				{
 					AddButton(60, 90, 4011, 4011, 21, GumpButtonType.Reply, 0);
-					AddHtml( 100, 90, 340, 21, @"<BODY><BASEFONT Color=#111111><BIG>Open Horizontal Ability Bar</BIG></BASEFONT></BODY>", (bool)false, (bool)false);
+					AddHtml( 100, 90, 340, 21, @"<BODY><BASEFONT Color=#111111><BIG>Open Horizontal Ability Bar</BIG></BASEFONT></BODY>", (bool)false, (bool)false,  false);
 
 					AddButton(60, 135, 4011, 4011, 22, GumpButtonType.Reply, 0);
-					AddHtml( 100, 135, 340, 21, @"<BODY><BASEFONT Color=#111111><BIG>Open Vertical Ability Bar</BIG></BASEFONT></BODY>", (bool)false, (bool)false);
+					AddHtml( 100, 135, 340, 21, @"<BODY><BASEFONT Color=#111111><BIG>Open Vertical Ability Bar</BIG></BASEFONT></BODY>", (bool)false, (bool)false,  false);
 
 					AddButton(60, 180, 4017, 4017, 23, GumpButtonType.Reply, 0);
-					AddHtml( 100, 180, 340, 21, @"<BODY><BASEFONT Color=#111111><BIG>Close Ability Bar</BIG></BASEFONT></BODY>", (bool)false, (bool)false);
+					AddHtml( 100, 180, 340, 21, @"<BODY><BASEFONT Color=#111111><BIG>Close Ability Bar</BIG></BASEFONT></BODY>", (bool)false, (bool)false,  false);
 				}
 				else if ( scroll.Page >= 3 && scroll.Page <= 10 )
 				{
@@ -443,19 +443,19 @@ namespace Server.Items
 						clue = "To be worthy of this ability, you need to either get the " + ShinobiInfo( ability, "prize1" ) + " at " + ShinobiInfo( ability, "where1" ) + " in the Land of Sosaria or the " + ShinobiInfo( ability, "prize2" ) + " at " + ShinobiInfo( ability, "where2" ) + " in the Land of Lodoria.";
 					}
 
-					AddHtml( 56, 109, 414, 92, @"<BODY><BASEFONT Color=#111111><BIG>" + clue + "</BIG></BASEFONT></BODY>", (bool)false, (bool)false);
-					AddHtml( 98, 68, 340, 21, @"<BODY><BASEFONT Color=#111111><BIG>" + ShinobiInfo( ability, "name" ) + "</BIG></BASEFONT></BODY>", (bool)false, (bool)false);
+					AddHtml( 56, 109, 414, 92, @"<BODY><BASEFONT Color=#111111><BIG>" + clue + "</BIG></BASEFONT></BODY>", (bool)false, (bool)false,  false);
+					AddHtml( 98, 68, 340, 21, @"<BODY><BASEFONT Color=#111111><BIG>" + ShinobiInfo( ability, "name" ) + "</BIG></BASEFONT></BODY>", (bool)false, (bool)false,  false);
 
 					AddItem(71, 205, 10126);
-					AddHtml( 110, 205, 48, 21, @"<BODY><BASEFONT Color=#111111><BIG>" + ShinobiInfo( ability, "skill" ) + "</BIG></BASEFONT></BODY>", (bool)false, (bool)false);
+					AddHtml( 110, 205, 48, 21, @"<BODY><BASEFONT Color=#111111><BIG>" + ShinobiInfo( ability, "skill" ) + "</BIG></BASEFONT></BODY>", (bool)false, (bool)false,  false);
 					AddTooltip("Required skill");
 
 					AddItem(220, 208, 3822);
-					AddHtml( 254, 205, 48, 21, @"<BODY><BASEFONT Color=#111111><BIG>" + ShinobiInfo( ability, "points" ) + "</BIG></BASEFONT></BODY>", (bool)false, (bool)false);
+					AddHtml( 254, 205, 48, 21, @"<BODY><BASEFONT Color=#111111><BIG>" + ShinobiInfo( ability, "points" ) + "</BIG></BASEFONT></BODY>", (bool)false, (bool)false,  false);
 					AddTooltip("Required tithing");
 
 					AddItem(364, 204, 10231);
-					AddHtml( 402, 205, 48, 21, @"<BODY><BASEFONT Color=#111111><BIG>" + ShinobiInfo( ability, "mana" ) + "</BIG></BASEFONT></BODY>", (bool)false, (bool)false);
+					AddHtml( 402, 205, 48, 21, @"<BODY><BASEFONT Color=#111111><BIG>" + ShinobiInfo( ability, "mana" ) + "</BIG></BASEFONT></BODY>", (bool)false, (bool)false,  false);
 					AddTooltip("Required mana");
 				}
 			}
