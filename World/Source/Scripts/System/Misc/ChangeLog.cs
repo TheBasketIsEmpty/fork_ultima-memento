@@ -6,11 +6,11 @@ namespace Server.Misc
 	{
 		// Chronological index: 0 = oldest release, 11 = current release.
 		// When shipping a new version, increment RELEASE_COUNT and add a new case at the end.
-		public const int RELEASE_COUNT = 13;
+		public const int RELEASE_COUNT = 14;
 
 		public static string Version()
 		{
-			return "Version: 2.4.0";
+			return "Version: 2.5.0";
 		}
 
 		public static string GetRelease(int page)
@@ -1016,7 +1016,6 @@ namespace Server.Misc
 
 				// Version 2.4.0
 				case 12:
-				default:
 					builder.Append(Version());
 					builder.Append("<br>Changes<br>");
 					builder.Append("- Avatar - Coins are now properly split between party members<br>");
@@ -1164,6 +1163,15 @@ namespace Server.Misc
 					builder.Append("- Spell - Natures Passage now transports in one action<br>");
 					builder.Append("- Temptations - Fix app start race condition preventing proper skill cap application<br>");
 					builder.Append("- Temptations - Fix bug where declining Temptations was creating a context anyways<br>");
+					break;
+
+				// Version 2.5.0
+				case 13:
+				default:
+					builder.Append(Version());
+					builder.Append("<br>Changes<br>");
+
+					builder.Append("<br>Fixes<br>");
 					break;
 			}
 		}
