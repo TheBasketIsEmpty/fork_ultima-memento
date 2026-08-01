@@ -98,6 +98,7 @@ namespace Server.Items
         {
             Name = "training shovel";
             Weight = 1;
+			ShowUsesRemaining = true;
         }
 
         public TrainingShovel(Serial serial) : base(serial)
@@ -114,7 +115,9 @@ namespace Server.Items
 
         public override void AppendChildProperties(ObjectPropertyList list)
         {
-            // Suppress behavior
+            // Suppress default behavior
+
+			list.Add( 1060584, "{0}\t{1}", UsesRemaining.ToString(), "Uses" );
         }
 
         public override void Serialize(GenericWriter writer)
