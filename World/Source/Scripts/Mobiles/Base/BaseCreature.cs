@@ -8399,7 +8399,6 @@ namespace Server.Mobiles
 					GenerateLoot( false );
 					if ( Backpack != null )
 					{
-						LootPackChange.MakeCoins(this.Backpack, this);
 						var lootingRights = GetLootingRights( this.DamageEntries, this.HitsMax );
 						var mobiles = lootingRights.Select(store => store.m_Mobile);
 						NotIdentified.DoAutoDelete( Backpack, mobiles );
@@ -8455,6 +8454,9 @@ namespace Server.Mobiles
 						}
 					}
 				}
+
+				// Make last so that DK and Holyman currency is checked first
+				LootPackChange.MakeCoins(this.Backpack, this);
 			}
 
 			if ( IsAnimatedDead )
