@@ -607,7 +607,7 @@ namespace Server.Misc
 				// Apply player option Defaults
 				newChar.PublicInfo = true;
 				newChar.Preferences.WeaponBarOpen = true;
-				newChar.Preferences.GumpHue = 1;
+				newChar.Preferences.ShowGumpImages = true;
 			}
 
 			new WelcomeTimer(newChar).Start();

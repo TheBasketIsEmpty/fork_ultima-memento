@@ -3,7 +3,7 @@ namespace Server.Engines.MLQuests.Gumps
 	public class InfoNPCGump : BaseQuestGump
 	{
 		public InfoNPCGump(TextDefinition title, TextDefinition message)
-			: base(1060668) // INFORMATION
+			: base(false, 1060668) // INFORMATION
 		{
 			RegisterButton(ButtonPosition.Left, ButtonGraphic.Close, 3);
 

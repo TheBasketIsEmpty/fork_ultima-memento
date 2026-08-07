@@ -57,7 +57,7 @@ namespace Server.Engines.MLQuests.Gumps
 		private string m_Title;
 		private List<ButtonInfo> m_Buttons;
 		// RunUO optimized version
-		public BaseQuestGump( int label )
+		public BaseQuestGump( bool showBackgroundImage, int label )
 			: base( 75, 25 )
 		{
 			m_Page = 0;
@@ -68,7 +68,7 @@ namespace Server.Engines.MLQuests.Gumps
 
 			AddPage( 0 );
 			
-			AddImage( 50, 20, 0x1452 );
+			AddImage( 50, 20, 0x1452, showBackgroundImage ? 0 : Misc.PlayerSettings.BLACK_GUMP_HUE );
 			AddImage( 90, 33, 0x232D ); // Medallion top left
 			AddHtmlLocalized( 130, 45, 270, 16, label, 0xFFFFFF, false, false );
 			AddImageTiled( 130, 65, 175, 1, 0x238D ); // Tiny Underline
