@@ -56,6 +56,7 @@ namespace Server.Spells.Mystic
 
 				Caster.SendMessage( "Your fists glow with magical energy." );
 				m_Table[weapon] = t = new ExpireTimer( weapon, duration, Caster );
+                BuffInfo.AddBuff(Caster, new BuffInfo(BuffIcon.ConsecrateWeapon, 1063605, duration, Caster));
 
 				t.Start();
 			}
