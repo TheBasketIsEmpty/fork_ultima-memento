@@ -1,4 +1,6 @@
 using Server.Items;
+using Server.Misc;
+using Server.Mobiles;
 using System;
 using System.Collections.Generic;
 
@@ -90,6 +92,15 @@ namespace Server.Engines.Avatar
 			}
 
 			BoatSpeedLevel = 9 < version ? reader.ReadInt() : 0;
+
+			if (10 < version)
+			{
+				UnlockTemplateJester = reader.ReadBool();
+				UnlockTemplateMystic = reader.ReadBool();
+				UnlockTemplateShinobi = reader.ReadBool();
+				UnlockTemplateDeathKnight = reader.ReadBool();
+				UnlockTemplateHolyMan = reader.ReadBool();
+			}
 		}
 
 		[CommandProperty(AccessLevel.GameMaster)]
@@ -100,13 +111,11 @@ namespace Server.Engines.Avatar
 		public int BoatSpeedLevel { get; set; }
 
 		[CommandProperty(AccessLevel.GameMaster)]
-		public int GrandTotalPoints { get { return LifetimePointsGained + PointsSaved + PointsFarmed; } }
+		public int GrandTotalPoints
+		{ get { return LifetimePointsGained + PointsSaved + PointsFarmed; } }
 
 		public bool HasSafetyDepositBox
 		{ get { return _safetyDepositBoxSerial != Serial.Zero && World.Items.ContainsKey(_safetyDepositBoxSerial); } }
-
-		[CommandProperty(AccessLevel.GameMaster)]
-		public int ImprovedTemplateCount { get; set; }
 
 		[CommandProperty(AccessLevel.GameMaster)]
 		public int LifetimeCombatQuestCompletions { get; set; }
@@ -206,7 +215,7 @@ namespace Server.Engines.Avatar
 
 		public void Serialize(GenericWriter writer)
 		{
-			writer.Write(10); // version
+			writer.Write(11); // version
 
 			writer.Write(PointsFarmed);
 			writer.Write(PointsSaved);
@@ -239,6 +248,11 @@ namespace Server.Engines.Avatar
 			writer.Write(_safetyDepositBoxSerial);
 			writer.Write(SafetyDepositBoxLevel);
 			writer.Write(BoatSpeedLevel);
+			writer.Write(UnlockTemplateJester);
+			writer.Write(UnlockTemplateMystic);
+			writer.Write(UnlockTemplateShinobi);
+			writer.Write(UnlockTemplateDeathKnight);
+			writer.Write(UnlockTemplateHolyMan);
 		}
 
 		public override string ToString()
@@ -249,11 +263,7 @@ namespace Server.Engines.Avatar
 
 	public partial class PlayerContext
 	{
-		public HashSet<AvatarStarterTemplates> BoostedTemplateCache { get; set; }
-
 		public Dictionary<Categories, List<int>> RewardCache { get; set; }
-
-		public AvatarStarterTemplates SelectedTemplate { get; set; }
 
 		public void ClearRewardCache(Categories category)
 		{
@@ -325,6 +335,116 @@ namespace Server.Engines.Avatar
 				SlayerName.Fey,
 			});
 			RivalBonusEnabled = true;
+		}
+	}
+
+	public partial class PlayerContext
+	{
+		public HashSet<AvatarStarterTemplates> BoostedTemplateCache { get; set; }
+
+		public bool CanUnlockTemplateDeathKnight
+		{ get { return 1000 <= Skills[SkillName.Knightship]; } }
+
+		public bool CanUnlockTemplateHolyMan
+		{ get { return 1000 <= Skills[SkillName.Healing] && 1000 <= Skills[SkillName.Spiritualism]; } }
+
+		public bool CanUnlockTemplateJedi
+		{ get { return 1000 <= Skills[SkillName.Swords] && 1000 <= Skills[SkillName.Psychology]; } }
+
+		public bool CanUnlockTemplateJester
+		{ get { return 1000 <= Skills[SkillName.Begging] && 1000 <= Skills[SkillName.Psychology]; } }
+
+		public bool CanUnlockTemplateMystic
+		{ get { return 1000 <= Skills[SkillName.Focus] && 1000 <= Skills[SkillName.Meditation]; } }
+
+		public bool CanUnlockTemplateShinobi
+		{ get { return 1000 <= Skills[SkillName.Ninjitsu]; } }
+
+		public bool CanUnlockTemplateSyth
+		{ get { return 1000 <= Skills[SkillName.Swords] && 1000 <= Skills[SkillName.Psychology]; } }
+
+		[CommandProperty(AccessLevel.GameMaster)]
+		public int ImprovedTemplateCount { get; set; }
+
+		public AvatarStarterTemplates SelectedTemplate { get; set; }
+
+		[CommandProperty(AccessLevel.GameMaster)]
+		public bool UnlockTemplateDeathKnight { get; set; }
+
+		[CommandProperty(AccessLevel.GameMaster)]
+		public bool UnlockTemplateHolyMan { get; set; }
+
+		[CommandProperty(AccessLevel.GameMaster)]
+		public bool UnlockTemplateJester { get; set; }
+
+		[CommandProperty(AccessLevel.GameMaster)]
+		public bool UnlockTemplateMystic { get; set; }
+
+		[CommandProperty(AccessLevel.GameMaster)]
+		public bool UnlockTemplateShinobi { get; set; }
+
+		public void ApplyTemplate(PlayerMobile player, AvatarStarterTemplates template)
+		{
+			if (!player.Avatar.Active) return;
+
+			switch (template)
+			{
+				case AvatarStarterTemplates.Jester:
+					{
+						player.Skills[SkillName.Begging].Base = player.Avatar.Skills[SkillName.Begging];
+						player.Skills[SkillName.Psychology].Base = player.Avatar.Skills[SkillName.Psychology];
+						player.AddItem(new BagOfTricks());
+						break;
+					}
+
+				case AvatarStarterTemplates.Mystic:
+					{
+						player.Skills[SkillName.Focus].Base = player.Avatar.Skills[SkillName.Focus];
+						player.Skills[SkillName.Meditation].Base = player.Avatar.Skills[SkillName.Meditation];
+						player.AddItem(new MysticSpellbook { Owner = player });
+						break;
+					}
+
+				case AvatarStarterTemplates.Shinobi:
+					{
+						player.Skills[SkillName.Ninjitsu].Base = player.Avatar.Skills[SkillName.Ninjitsu];
+						player.AddItem(new ShinobiScroll { Owner = player });
+						break;
+					}
+
+				case AvatarStarterTemplates.DeathKnight:
+					{
+						player.Karma = -5000;
+						player.Skills[SkillName.Knightship].Base = player.Avatar.Skills[SkillName.Knightship];
+						player.AddItem(new DeathKnightSpellbook { Owner = player });
+						break;
+					}
+
+				case AvatarStarterTemplates.HolyMan:
+					{
+						player.Skills[SkillName.Healing].Base = player.Avatar.Skills[SkillName.Healing];
+						player.Skills[SkillName.Spiritualism].Base = player.Avatar.Skills[SkillName.Spiritualism];
+						player.AddItem(new HolyManSpellbook { Owner = player });
+						break;
+					}
+
+				case AvatarStarterTemplates.Brute:
+				case AvatarStarterTemplates.Acrobat:
+				case AvatarStarterTemplates.Scholar:
+					{
+						// You get NOTHING!
+						break;
+					}
+
+				default:
+					if (template > AvatarStarterTemplates.DEFAULT_START && template < AvatarStarterTemplates.DEFAULT_END)
+					{
+						var profession = (StarterProfessions)template;
+						var skills = CharacterCreation.GetTemplateSkills(profession);
+						CharacterCreation.AddSkillBasedItems(player, skills);
+					}
+					break;
+			}
 		}
 	}
 }
