@@ -1,14 +1,5 @@
-using System;
-using Server;
-using Server.Network;
-using System.Text;
-using Server.Items;
-using Server.Gumps;
-using Server.Regions;
 using Server.Mobiles;
 using System.Collections;
-using System.Collections.Generic;
-using Server.Accounting;
 
 namespace Server.Items
 {
@@ -21,19 +12,19 @@ namespace Server.Items
 		public string PorterName;
 		public int m_Nul;
 
-		[CommandProperty(AccessLevel.Owner)]
+		[CommandProperty(AccessLevel.GameMaster)]
 		public int Porter_Serial{ get { return PorterSerial; } set { PorterSerial = value; InvalidateProperties(); } }
 
-		[CommandProperty(AccessLevel.Owner)]
+		[CommandProperty(AccessLevel.GameMaster)]
 		public Mobile Porter_Owner{ get { return PorterOwner; } set { PorterOwner = value; InvalidateProperties(); } }
 
-		[CommandProperty(AccessLevel.Owner)]
+		[CommandProperty(AccessLevel.GameMaster)]
 		public int Porter_Level{ get { return PorterLevel; } set { PorterLevel = value; InvalidateProperties(); } }
 
-		[CommandProperty(AccessLevel.Owner)]
+		[CommandProperty(AccessLevel.GameMaster)]
 		public int Porter_Type{ get { return PorterType; } set { PorterType = value; InvalidateProperties(); } }
 
-		[CommandProperty(AccessLevel.Owner)]
+		[CommandProperty(AccessLevel.GameMaster)]
 		public string Porter_Name { get { return PorterName; } set { PorterName = value; InvalidateProperties(); } }
 
 		[Constructable]
@@ -123,7 +114,6 @@ namespace Server.Items
 				friend.ControlMaster = from;
 				friend.Controlled = true;
 				friend.ControlOrder = OrderType.Come;
-				friend.ControlSlots = 5;
 				friend.Loyalty = 100;
 				friend.Summoned = true;
 				friend.SummonMaster = from;
