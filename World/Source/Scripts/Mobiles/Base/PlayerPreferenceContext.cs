@@ -81,6 +81,8 @@ namespace Server.Mobiles
 				ModernLockpickingEnabled = true;
 				ModernRemoveTrapEnabled = true;
 			}
+
+			SuppressSystemMessages = 8 < version ? reader.ReadBool() : false;
 		}
 
 		[CommandProperty(AccessLevel.GameMaster)]
@@ -118,9 +120,6 @@ namespace Server.Mobiles
 
 		[CommandProperty(AccessLevel.GameMaster)]
 		public bool DoubleClickToTalk { get; set; }
-
-		[CommandProperty(AccessLevel.GameMaster)]
-		public bool ShowGumpImages { get; set; }
 
 		[CommandProperty(AccessLevel.GameMaster)]
 		public bool IgnoreVendorGoldSafeguard { get; set; }
@@ -162,7 +161,13 @@ namespace Server.Mobiles
 		public string RegBar { get; set; }
 
 		[CommandProperty(AccessLevel.GameMaster)]
+		public bool ShowGumpImages { get; set; }
+
+		[CommandProperty(AccessLevel.GameMaster)]
 		public bool SingleAttemptID { get; set; }
+
+		[CommandProperty(AccessLevel.GameMaster)]
+		public bool SuppressSystemMessages { get; set; }
 
 		[CommandProperty(AccessLevel.GameMaster)]
 		public bool SuppressVendorTooltip { get; set; }
@@ -190,7 +195,7 @@ namespace Server.Mobiles
 
 		public void Serialize(GenericWriter writer)
 		{
-			writer.Write(8);
+			writer.Write(9);
 
 			writer.Write(DoubleClickID);
 			writer.Write(SuppressVendorTooltip);
@@ -232,6 +237,8 @@ namespace Server.Mobiles
 			writer.Write(ModernRemoveTrapEnabled);
 			writer.Write(ModernLockpickingAutoRetryEnabled);
 			writer.Write(ModernRemoveTrapsAutoRetryEnabled);
+
+			writer.Write(SuppressSystemMessages);
 		}
 	}
 }
