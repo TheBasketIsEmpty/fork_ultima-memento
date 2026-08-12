@@ -2,6 +2,7 @@ using Server.Gumps;
 using Server.Mobiles;
 using Server.Network;
 using System;
+using System.Text;
 
 namespace Server.Temptation
 {
@@ -19,6 +20,8 @@ namespace Server.Temptation
 			Puzzle_master,
 			This_is_just_a_tribute,
 			Deathwish,
+
+			INFO_BASE = 100,
 		}
 
 		private const int BORDER_WIDTH = 0;
@@ -177,18 +180,67 @@ namespace Server.Temptation
 
 				case ActionButtonType.Close:
 				default:
+					if ((int)ActionButtonType.INFO_BASE < info.ButtonID)
+					{
+						var actionButtonType = (ActionButtonType)(info.ButtonID - (int)ActionButtonType.INFO_BASE);
+						switch (actionButtonType)
+						{
+							case ActionButtonType.Puzzle_master:
+								var builder = new StringBuilder();
+								builder.Append("This temptation removes the need for integrating Stealing and Snooping into your template.<br><br>");
+								builder.Append("Permanently reduced skill cap bonuses<br>");
+								builder.Append("- Fugitives begin with a +200 skill cap bonus, down from +300<br>");
+								builder.Append("- Titan of Ether quest completion grants +200 skill cap bonus, down from +500<br>");
+								builder.Append("<br>");
+
+								builder.Append("Monster racial bonuses<br>");
+								builder.Append("- Magical attribute type bonuses now act as Minimums instead of stacking with equipment<br>");
+								builder.Append("- Resist/Stat bonuses stack normally<br>");
+								builder.Append("<br>");
+								builder.Append("Example:<br>");
+								builder.Append("- Your combined equipment bonuses<br>");
+								builder.Append("  +1 Fire Resistance<br>");
+								builder.Append("  +2% Damage Increase<br>");
+								builder.Append("  +30 Luck<br>");
+								builder.Append("  +4 Arms Lore<br>");
+								builder.Append("- Your monster racial bonuses provide<br>");
+								builder.Append("  +5 Fire Resistance<br>");
+								builder.Append("  +6% Damage Increase<br>");
+								builder.Append("  +7 Luck<br>");
+								builder.Append("  +8 Arms Lore<br>");
+								builder.Append("- Your total bonus values are<br>");
+								builder.Append("  1 + 5 ... 6 Fire Resistance<br>");
+								builder.Append("  Max(2%, 6%) ... 6% Damage Increase<br>");
+								builder.Append("  Max(30, 7) ... 30 Luck<br>");
+								builder.Append("  4 + 8 ... 12 Arms Lore<br>");
+
+								m_Requester.SendGump(new InfoHelpGump(
+									m_Requester, "Puzzle master",
+									builder.ToString(), true,
+									() => m_Requester.SendGump(new TemptationGump(m_Target, m_Context, m_Requester, m_OnAccept, m_OnDecline))
+								));
+								break;
+						}
+					}
 					return;
 			}
 
 			m_Requester.SendGump(new TemptationGump(m_Target, m_Context, m_Requester, m_OnAccept, m_OnDecline));
 		}
 
-		private void AddOption(int x, ref int y, ActionButtonType actionButtonType, bool canEdit, PlayerContext context)
+		private void AddOption(int x, ref int y, ActionButtonType actionButtonType, bool canEdit, bool canInfo, PlayerContext context)
 		{
 			const int X_BUTTON = 0xFB1;
 			const int BLANK_BUTTON = 0xE19;
+			const int PAGE_ICON = 4011;
 			var isSelected = GetIsSelected(actionButtonType, context);
 			if (!canEdit && !isSelected) return;
+
+			if (canInfo)
+			{
+				AddButton(x, y, PAGE_ICON, PAGE_ICON, (int)ActionButtonType.INFO_BASE + (int)actionButtonType, GumpButtonType.Reply, 0);
+			}
+			x += 35; // Always add a gap
 
 			var button = isSelected ? X_BUTTON : BLANK_BUTTON;
 			if (canEdit)
@@ -209,14 +261,14 @@ namespace Server.Temptation
 
 		private void AddOptions(int x, ref int y, bool canEdit, PlayerContext context)
 		{
-			AddOption(x, ref y, ActionButtonType.Puzzle_master, canEdit, context);
+			AddOption(x, ref y, ActionButtonType.Puzzle_master, canEdit, true, context);
 			// AddOption(x, ref y, ActionButtonType.Famine, canEdit, context); // Incomplete
-			AddOption(x, ref y, ActionButtonType.I_can_take_it, canEdit, context);
-			AddOption(x, ref y, ActionButtonType.Strongest_Avenger, canEdit, context);
+			AddOption(x, ref y, ActionButtonType.I_can_take_it, canEdit, false, context);
+			AddOption(x, ref y, ActionButtonType.Strongest_Avenger, canEdit, false, context);
 			// AddOption(x, ref y, ActionButtonType.This_is_just_a_tribute, canEdit, context); // Incomplete
 
 			if (!m_Target.Avatar.Active || !canEdit)
-				AddOption(x, ref y, ActionButtonType.Deathwish, canEdit, context);
+				AddOption(x, ref y, ActionButtonType.Deathwish, canEdit, false, context);
 		}
 
 		private string GetDescription(ActionButtonType actionButtonType)
@@ -237,8 +289,8 @@ namespace Server.Temptation
 
 				case ActionButtonType.Puzzle_master:
 					return "+ You learn how to solve puzzle boxes"
-					+ "<br>x Reduced skill cap bonuses for Fugitives (+200) and Titan of Ether quest (+200)"
-					+ "<br>x Magical attributes from monster racial bonuses now act as Minimums. Resist/Stat bonuses still stack.";
+					+ "<br>x Permanently reduced skill cap bonuses"
+					+ "<br>x Monster racial bonuses work differently";
 
 				case ActionButtonType.This_is_just_a_tribute: return "- Tribute quests rewards are changed";
 				case ActionButtonType.Deathwish:
