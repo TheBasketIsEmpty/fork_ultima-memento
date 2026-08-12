@@ -11627,7 +11627,7 @@ namespace Server
 		#endregion
 
 		public static readonly Packet SuppressedSystemMessageInstance = Packet.SetStatic( 
-			new UnicodeMessage( Serial.MinusOne, -1, MessageType.Regular, 0x3B2, 3, "ENU", "System:", "!" )
+			new UnicodeMessage( Serial.MinusOne, -1, MessageType.Regular, 0x3B2, 3, "ENU", "System", "!" )
 		);
 		private void SendSuppressedSystemMessage()
 		{
