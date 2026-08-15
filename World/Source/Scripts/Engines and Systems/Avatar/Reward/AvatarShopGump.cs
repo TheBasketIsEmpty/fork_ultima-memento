@@ -12,9 +12,9 @@ namespace Server.Engines.Avatar
 	{
 		public const int BLANK_ITEM_ID = 0;
 		public const int COST_FREE = -1;
+		public const int COST_NO_BUY = 0;
 		public const int FAT_BOTTLE_ITEM_ID = 0x1FD9;
 		public const int GOLD_STACK_ITEM_ID = 0x0EEF;
-		public const int COST_NO_BUY = 0;
 		public const int NO_ITEM_ID = -1;
 		private const int CARD_HEIGHT = 68;
 		private const int CARD_WIDTH = 864 - NAVIGATION_WIDTH;
@@ -31,6 +31,7 @@ namespace Server.Engines.Avatar
 			Categories.SecondaryBoosts,
 			Categories.FullSkillArchive,
 			// Categories.Items,
+			Categories.Statistics,
 		};
 
 		private readonly PlayerContext m_Context;
@@ -66,7 +67,13 @@ namespace Server.Engines.Avatar
 
 			if (selectedCategory == Categories.Information)
 			{
-				AddKeyValuePairsCard(NAVIGATION_WIDTH + 20, y);
+				AddKeyValuePairsCard(NAVIGATION_WIDTH + 20, y, true,
+					new _Metric("Time Played", m_From.GameTime.ToString("dd'd 'hh'h 'mm'm'")),
+					new _Metric("Stat Cap", m_From.StatCap.ToString()),
+					new _Metric("Skill Cap", (m_From.SkillsCap / 10).ToString("n0")),
+					new _Metric("Faction Bonus", Math.Min(Constants.RIVAL_BONUS_MAX_POINTS, m_Context.RivalBonusPoints).ToString("n0"),
+						"The amount of coins you have received for killing your enemy faction.")
+				);
 				y += CARD_HEIGHT;
 				y += 10;
 
@@ -166,6 +173,40 @@ namespace Server.Engines.Avatar
 					case Categories.Items:
 						{
 							AddInformationCard(BLANK_ITEM_ID, "Items - Purchase Temporary Conveniences", "Items can be purchased to assist you with your next run. Be wary of how much you invest, as these items are lost upon death.", y, addBackground: false);
+							break;
+						}
+
+					case Categories.Statistics:
+						{
+							AddInformationCard(BLANK_ITEM_ID, "My Stats", "Review your current stats and see how you compare to the average player.", y, addBackground: false);
+
+							y += CARD_HEIGHT;
+							y += 10;
+							AddKeyValuePairsCard(NAVIGATION_WIDTH + 20, y, true,
+							new _Metric("Time Played", m_From.GameTime.ToString("dd'd 'hh'h 'mm'm'")),
+								new _Metric("Stat Cap", m_From.StatCap.ToString()),
+								new _Metric("Skill Cap", (m_From.SkillsCap / 10).ToString("n0")),
+								new _Metric("Faction Bonus", Math.Min(Constants.RIVAL_BONUS_MAX_POINTS, m_Context.RivalBonusPoints).ToString("n0"),
+									"The amount of coins you have received for killing your enemy faction.")
+							);
+
+							y += CARD_HEIGHT;
+							y += 10;
+							AddKeyValuePairsCard(NAVIGATION_WIDTH + 20, y, true,
+								new _Metric("Lifetime", ""),
+								new _Metric("Time Played", m_From.Avatar.LifetimeGameTime.ToString("dd'd 'hh'h 'mm'm'")),
+								new _Metric("Points Gained", m_From.Avatar.GrandTotalPoints.ToString("n0")),
+								new _Metric("Combat Quests", m_From.Avatar.LifetimeCombatQuestCompletions.ToString("n0"))
+							);
+
+							y += CARD_HEIGHT;
+							y += 10;
+							AddKeyValuePairsCard(NAVIGATION_WIDTH + 20, y, true,
+								new _Metric("Lifetime", ""),
+								new _Metric("Deaths", m_From.Avatar.LifetimeDeaths.ToString("n0")),
+								new _Metric("Faction Kills", m_From.Avatar.LifetimeEnemyFactionKills.ToString("n0")),
+								new _Metric("Other Kills", (m_From.Avatar.LifetimeCreatureKills - m_From.Avatar.LifetimeEnemyFactionKills).ToString("n0"))
+							);
 							break;
 						}
 
@@ -543,6 +584,7 @@ namespace Server.Engines.Avatar
 					case Categories.Ascensions:
 					case Categories.Templates:
 					case Categories.Items:
+					case Categories.Statistics:
 					default:
 						categoryName = category.ToString();
 						break;
@@ -566,31 +608,43 @@ namespace Server.Engines.Avatar
 			AddCard(0, itemId, name, description, false, 0, 0, y, tooltip, scrollable, addBackground);
 		}
 
-		private void AddKeyValuePairsCard(int x, int y)
+		private void AddKeyValuePairsCard(int x, int y, bool addBackground, params _Metric[] metrics)
 		{
-			AddBackground(x, y, CARD_WIDTH, CARD_HEIGHT + 5, 2620);
+			if (addBackground)
+				AddBackground(x, y, CARD_WIDTH, CARD_HEIGHT + 5, 2620);
 
-			const int COUNT = 3;
+			int count = metrics.Length;
+			if (count < 1) return;
+
 			const int WIDTH_AVAILABLE = CARD_WIDTH;
-			var cardWidth = Math.Min(100, WIDTH_AVAILABLE / COUNT);
-
-			var space = cardWidth + (int)((double)cardWidth / (COUNT - 1));
-			x += (WIDTH_AVAILABLE - (space * (COUNT - 1)) - cardWidth) / 2; // Split any excess due to card width limits
+			var cardWidth = WIDTH_AVAILABLE / count;
+			x += (WIDTH_AVAILABLE - cardWidth * count) / 2;
 
 			var firstRowY = y + 20;
 			var secondRowY = firstRowY + 20;
 
-			TextDefinition.AddHtmlText(this, x, firstRowY, cardWidth, 40, string.Format("<CENTER>{0}</CENTER>", m_From.StatCap), HtmlColors.ORANGE);
-			TextDefinition.AddHtmlText(this, x, secondRowY, cardWidth, 40, "<CENTER>Stat Cap</CENTER>", HtmlColors.COOL_BLUE);
+			foreach (var metric in metrics)
+			{
+				TextDefinition.AddHtmlText(this, x, firstRowY, cardWidth, 40, string.Format("<CENTER>{0}</CENTER>", metric.Value), HtmlColors.ORANGE);
+				TextDefinition.AddHtmlText(this, x, secondRowY, cardWidth, 40, string.Format("<CENTER>{0}</CENTER>", metric.Label), HtmlColors.COOL_BLUE);
+				if (!string.IsNullOrWhiteSpace(metric.Tooltip))
+					AddTooltip(metric.Tooltip);
+				x += cardWidth;
+			}
+		}
 
-			x += space;
-			TextDefinition.AddHtmlText(this, x, firstRowY, cardWidth, 40, string.Format("<CENTER>{0}</CENTER>", (m_From.SkillsCap / 10).ToString("n0")), HtmlColors.ORANGE);
-			TextDefinition.AddHtmlText(this, x, secondRowY, cardWidth, 40, "<CENTER>Skill Cap</CENTER>", HtmlColors.COOL_BLUE);
+		private struct _Metric
+		{
+			public string Label;
+			public string Tooltip;
+			public string Value;
 
-			x += space;
-			TextDefinition.AddHtmlText(this, x, firstRowY, cardWidth, 40, string.Format("<CENTER>{0}</CENTER>", Math.Min(Constants.RIVAL_BONUS_MAX_POINTS, m_Context.RivalBonusPoints).ToString("n0")), HtmlColors.ORANGE);
-			TextDefinition.AddHtmlText(this, x, secondRowY, cardWidth, 40, "<CENTER>Faction Bonus</CENTER>", HtmlColors.COOL_BLUE);
-			AddTooltip("The amount of coins you have received for killing your enemy faction.");
+			public _Metric(string label, string value, string tooltip = null)
+			{
+				Label = label;
+				Value = value;
+				Tooltip = tooltip;
+			}
 		}
 	}
 }
