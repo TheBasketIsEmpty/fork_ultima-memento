@@ -1,8 +1,9 @@
-using System;
 using Server.Commands;
 using Server.Gumps;
 using Server.Misc;
 using Server.Mobiles;
+using Server.Utilities;
+using System;
 
 namespace Server.Engines.Avatar
 {
@@ -12,6 +13,7 @@ namespace Server.Engines.Avatar
 		{
 			CommandSystem.Register("avatar-enable", AccessLevel.Player, new CommandEventHandler(EnableAvatarCommand));
 			CommandSystem.Register("avatar-shop", AccessLevel.Player, new CommandEventHandler(OpenAvatarShopCommand));
+			CommandSystem.Register("avatar-migrate--game-time", AccessLevel.Administrator, new CommandEventHandler(OnMigrateGameTime));
 		}
 
 		[Usage("avatar-enable")]
@@ -38,7 +40,7 @@ namespace Server.Engines.Avatar
 				() =>
 				{
 					from.SendMessage("Your character will be recreated and you will be disconnected shortly...");
-					
+
 					Timer.DelayCall(TimeSpan.FromSeconds(1), () =>
 					{
 						var _ = AvatarEngine.Instance.GetOrCreateContext(from);
@@ -49,6 +51,23 @@ namespace Server.Engines.Avatar
 				}
 			);
 			from.SendGump(confirmation);
+		}
+
+		[Description("Adds all the game time from the death contexts to the avatar's lifetime game time.")]
+		public static void OnMigrateGameTime(CommandEventArgs e)
+		{
+			var avatars = WorldUtilities.ForEachMobile<PlayerMobile>(pm => pm != null && !pm.Deleted && pm.Avatar.Active);
+			foreach (var avatar in avatars)
+			{
+				foreach (var deathContext in DeathContext.GetAllDeathContexts(avatar))
+				{
+					if (0 < deathContext.Version) continue;
+
+					avatar.Avatar.LifetimeGameTime = avatar.Avatar.LifetimeGameTime.Add(deathContext.GameTime);
+				}
+			}
+
+			e.Mobile.SendMessage("Deaths loaded successfully.");
 		}
 
 		[Usage("avatar-shop")]
