@@ -11,6 +11,7 @@ namespace Server.Mobiles
 			ColorlessFabricBreakdown = true;
 			ModernLockpickingEnabled = true;
 			ModernRemoveTrapEnabled = true;
+			ModernTrackingEnabled = true;
 			VendorContainerSellCompactItemsPerPage = VendorContainerSellConfigGump.DefaultVendorContainerSellCompactItemsPerPage;
 			VendorContainerSellLargeItemsPerPage = VendorContainerSellConfigGump.DefaultVendorContainerSellLargeItemsPerPage;
 			VendorContainerSellSelectionBehavior = VendorContainerSellSelectionBehavior.AsManyAsPossible;
@@ -83,6 +84,7 @@ namespace Server.Mobiles
 			}
 
 			SuppressSystemMessages = 8 < version ? reader.ReadBool() : false;
+			ModernTrackingEnabled = 9 < version ? reader.ReadBool() : true;
 		}
 
 		[CommandProperty(AccessLevel.GameMaster)]
@@ -146,6 +148,9 @@ namespace Server.Mobiles
 		public bool ModernRemoveTrapsAutoRetryEnabled { get; set; }
 
 		[CommandProperty(AccessLevel.GameMaster)]
+		public bool ModernTrackingEnabled { get; set; }
+
+		[CommandProperty(AccessLevel.GameMaster)]
 		public string MusicPlaylist { get; set; }
 
 		[CommandProperty(AccessLevel.GameMaster)]
@@ -195,7 +200,7 @@ namespace Server.Mobiles
 
 		public void Serialize(GenericWriter writer)
 		{
-			writer.Write(9);
+			writer.Write(10);
 
 			writer.Write(DoubleClickID);
 			writer.Write(SuppressVendorTooltip);
@@ -239,6 +244,7 @@ namespace Server.Mobiles
 			writer.Write(ModernRemoveTrapsAutoRetryEnabled);
 
 			writer.Write(SuppressSystemMessages);
+			writer.Write(ModernTrackingEnabled);
 		}
 	}
 }
