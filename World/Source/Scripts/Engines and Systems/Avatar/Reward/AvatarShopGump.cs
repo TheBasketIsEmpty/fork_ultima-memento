@@ -195,7 +195,7 @@ namespace Server.Engines.Avatar
 							AddKeyValuePairsCard(NAVIGATION_WIDTH + 20, y, true,
 								new _Metric("Lifetime", ""),
 								new _Metric("Time Played", m_From.Avatar.LifetimeGameTime.ToString("dd'd 'hh'h 'mm'm'")),
-								new _Metric("Points Gained", m_From.Avatar.GrandTotalPoints.ToString("n0")),
+								new _Metric("Coins Gained", m_From.Avatar.GrandTotalPoints.ToString("n0")),
 								new _Metric("Combat Quests", m_From.Avatar.LifetimeCombatQuestCompletions.ToString("n0"))
 							);
 
