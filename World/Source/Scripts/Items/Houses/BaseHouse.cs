@@ -214,6 +214,7 @@ namespace Server.Multis
 
 		public virtual TimeSpan RestrictedPlacingTime { get { return TimeSpan.FromHours( 0.0 ); } }
 
+// WIP - ADD SETTINGS FILE CHECK HERE
 		[CommandProperty( AccessLevel.GameMaster )]
 		public virtual double BonusStorageScalar { get { return (Core.ML ? 1.2 : 1.0); } }
 

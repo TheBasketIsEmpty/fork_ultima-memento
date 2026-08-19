@@ -369,6 +369,7 @@ namespace Server.Gumps
 					int maxLockdowns = house.GetAosMaxLockdowns();
 					int curLockdowns = house.GetAosCurLockdowns();
 
+                    // WIP - VERIFY HOUSE SIGN UPDATES AS EXPECTED
 					int bonusStorage = (int)((house.BonusStorageScalar * 100)-100);
 
 					if( bonusStorage > 0 )
