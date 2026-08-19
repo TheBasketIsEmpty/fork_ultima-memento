@@ -674,6 +674,9 @@ namespace Server
 
 
 
+	// If greater than 1.0, set the Housing Storage "Increased Storage" percentage to the specified amount.
+	// The default if 1.2, which is 20% additional storage.
+		public static double S_BonusStorage = 1.2;
 
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	// 010 - PETS, MOUNTS, & FOLLOWERS ////////////////////////////////////////////////////////////
